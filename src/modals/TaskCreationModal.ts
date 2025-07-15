@@ -225,6 +225,10 @@ export class TaskCreationModal extends TaskModal {
         
         if (parsed.contexts && parsed.contexts.length > 0) this.contexts = parsed.contexts.join(', ');
         if (parsed.tags && parsed.tags.length > 0) this.tags = parsed.tags.join(', ');
+        if (parsed.projects && parsed.projects.length > 0) {
+            this.initializeProjectsFromStrings(parsed.projects);
+            this.renderProjectsList();
+        }
         if (parsed.details) this.details = parsed.details;
         if (parsed.recurrence) this.recurrenceRule = parsed.recurrence;
 
