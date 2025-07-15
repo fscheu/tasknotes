@@ -14,6 +14,7 @@ export interface ParsedTaskData {
     status?: string;
     tags: string[];
     contexts: string[];
+    projects: string[];
     recurrence?: string;
     estimate?: number; // in minutes
     isCompleted?: boolean;
@@ -51,6 +52,7 @@ export class NaturalLanguageParser {
             title: '',
             tags: [],
             contexts: [],
+            projects: [],
         };
 
         // 1. Separate title line from details
@@ -65,6 +67,7 @@ export class NaturalLanguageParser {
         // Extract simple, unambiguous patterns first
         remainingText = this.extractTags(remainingText, result);
         remainingText = this.extractContexts(remainingText, result);
+        remainingText = this.extractProjects(remainingText, result);
 
         // Extract configured keywords
         remainingText = this.extractPriority(remainingText, result);
@@ -121,6 +124,16 @@ export class NaturalLanguageParser {
         if (contextMatches) {
             result.contexts.push(...contextMatches.map(context => context.substring(1)));
             return this.cleanupWhitespace(text.replace(/@\w+/g, ''));
+        }
+        return text;
+    }
+
+    /** Extracts #[[Project]] links from the text and adds them to the result object. */
+    private extractProjects(text: string, result: ParsedTaskData): string {
+        const projectMatches = text.match(/#\[\[[^\]]+\]\]/g);
+        if (projectMatches) {
+            result.projects.push(...projectMatches.map(p => p.substring(1)));
+            return this.cleanupWhitespace(text.replace(/#\[\[[^\]]+\]\]/g, ''));
         }
         return text;
     }
@@ -501,6 +514,7 @@ export class NaturalLanguageParser {
         // Sanitize and remove duplicates from arrays
         result.tags = [...new Set(result.tags.filter(Boolean))];
         result.contexts = [...new Set(result.contexts.filter(Boolean))];
+        result.projects = [...new Set(result.projects.filter(Boolean))];
 
         // Ensure date and time strings are valid formats (defensive check)
         if (result.dueDate && !this.isValidDateString(result.dueDate)) delete result.dueDate;

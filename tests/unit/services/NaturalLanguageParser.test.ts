@@ -155,6 +155,28 @@ describe('NaturalLanguageParser', () => {
     });
   });
 
+  describe('Projects Extraction', () => {
+    it('should extract wikilink projects', () => {
+      const result = parser.parseInput('Work on #[[Project Alpha]] today');
+
+      expect(result.projects).toEqual(['[[Project Alpha]]']);
+      expect(result.title).toBe('Work on today');
+    });
+
+    it('should extract multiple projects', () => {
+      const result = parser.parseInput('Task #[[Project A]] #[[Project B]]');
+
+      expect(result.projects).toEqual(['[[Project A]]', '[[Project B]]']);
+      expect(result.title).toBe('Task');
+    });
+
+    it('should handle duplicate projects', () => {
+      const result = parser.parseInput('Task #[[Proj]] #[[Proj]]');
+
+      expect(result.projects).toEqual(['[[Proj]]']);
+    });
+  });
+
   describe('Priority Extraction', () => {
     it('should extract configured priority values', () => {
       const result = parser.parseInput('urgent task needs completion');
@@ -620,6 +642,7 @@ describe('NaturalLanguageParser', () => {
         dueTime: '14:30',
         tags: ['documentation'],
         contexts: ['work'],
+        projects: [],
         estimate: 120,
         recurrence: 'FREQ=DAILY'
       };
@@ -641,7 +664,8 @@ describe('NaturalLanguageParser', () => {
         title: 'Simple Task',
         priority: 'normal',
         tags: ['test'],
-        contexts: []
+        contexts: [],
+        projects: []
       };
 
       const preview = parser.getPreviewText(parsedData);
@@ -657,7 +681,8 @@ describe('NaturalLanguageParser', () => {
         title: 'Task with long details',
         details: longDetails,
         tags: [],
-        contexts: []
+        contexts: [],
+        projects: []
       };
 
       const preview = parser.getPreviewData(parsedData);
@@ -672,7 +697,8 @@ describe('NaturalLanguageParser', () => {
         title: 'Task',
         recurrence: 'INVALID_RRULE',
         tags: [],
-        contexts: []
+        contexts: [],
+        projects: []
       };
 
       const preview = parser.getPreviewData(parsedData);
@@ -702,7 +728,8 @@ describe('NaturalLanguageParser', () => {
         title: 'Task',
         recurrence: 'FREQ=DAILY',
         tags: [],
-        contexts: []
+        contexts: [],
+        projects: []
       };
 
       // Mock RRule.fromString to throw
