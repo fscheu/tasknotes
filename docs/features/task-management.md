@@ -10,6 +10,19 @@ TaskNotes also supports **Natural Language Creation**, which allows you to creat
 
 Additionally, you can convert existing checkbox tasks in your notes to TaskNotes using the **Instant Conversion** feature.
 
+## Natural Language
+
+The natural language parser can assign projects directly from your text. Use the
+`#[[Project Name]]` syntax to reference a project note while typing your task
+description. For example:
+
+```
+Finish landing page #[[Website Redesign]] tomorrow
+```
+
+This will link the task to the project note "Website Redesign" and set the due
+date to tomorrow.
+
 ## Task Properties
 
 Each task in TaskNotes is a Markdown file with a YAML frontmatter block that stores its properties. The core properties include:
