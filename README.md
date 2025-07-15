@@ -91,6 +91,16 @@ recurrence: "FREQ=WEEKLY;BYDAY=MO"
 complete_instances: ["2024-01-08"]
 ```
 
+### Natural Language Example
+Typing a description like:
+
+```
+Finish slides #[[Conference Prep]] tomorrow
+```
+
+will create a task linked to the project note "Conference Prep" with a due date
+set for tomorrow.
+
 ## Credits
 
 This plugin uses [FullCalendar.io](https://fullcalendar.io/) for its calendar components.
