@@ -4,7 +4,7 @@ import { TasksPluginParser, ParsedTaskData } from '../utils/TasksPluginParser';
 import { NaturalLanguageParser } from './NaturalLanguageParser';
 import { TaskCreationData } from '../types';
 import { getCurrentTimestamp } from '../utils/dateUtils';
-import { calculateDefaultDate } from '../utils/helpers';
+import { calculateDefaultDate, filterEmptyProjects } from '../utils/helpers';
 import { StatusManager } from './StatusManager';
 import { PriorityManager } from './PriorityManager';
 import { dispatchTaskUpdate } from '../editor/TaskLinkOverlay';
@@ -258,6 +258,7 @@ export class InstantTaskConvertService {
         let dueDate: string | undefined;
         let scheduledDate: string | undefined;
         let contextsArray: string[] = [];
+        let projectsArray: string[] = [];
         let tagsArray = [this.plugin.settings.taskTag];
         let timeEstimate: number | undefined;
         let recurrence: import('../types').RecurrenceInfo | undefined;
@@ -293,6 +294,11 @@ export class InstantTaskConvertService {
                 const defaultTagsArray = defaults.defaultTags.split(',').map(s => s.trim()).filter(s => s);
                 tagsArray = [...tagsArray, ...defaultTagsArray];
             }
+
+            // Apply projects from parsed data if available
+            if (Array.isArray(parsedData.projects)) {
+                projectsArray = filterEmptyProjects(parsedData.projects);
+            }
             
             // Apply time estimate
             if (defaults.defaultTimeEstimate && defaults.defaultTimeEstimate > 0) {
@@ -313,6 +319,9 @@ export class InstantTaskConvertService {
             scheduledDate = parsedScheduledDate || undefined;
             // Keep minimal tags (just the task tag)
             tagsArray = [this.plugin.settings.taskTag];
+            if (Array.isArray(parsedData.projects)) {
+                projectsArray = filterEmptyProjects(parsedData.projects);
+            }
         }
 
         // Create TaskCreationData object with all the data
@@ -323,6 +332,7 @@ export class InstantTaskConvertService {
             due: dueDate,
             scheduled: scheduledDate,
             contexts: contextsArray.length > 0 ? contextsArray : undefined,
+            projects: projectsArray.length > 0 ? projectsArray : undefined,
             tags: tagsArray,
             timeEstimate: timeEstimate,
             recurrence: recurrence,
